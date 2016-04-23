@@ -40,8 +40,8 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 app.use(methodOverride());
 app.use(express.static(path.join(__dirname, 'public')));
-app.use('/style', express.static(path.join(__dirname, '/views/style')));
-
+app.use('/static', express.static(path.join(__dirname, '/views')));
+//app.use('/static', express.static('public'));
 // development only
 if ('development' == app.get('env')) {
   app.use(errorHandler());

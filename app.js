@@ -19,7 +19,7 @@ var cloudant;
 var fileToUpload;
 
 var dbCredentials = {
-	dbName : 'my_sample_db'
+	dbName : 'commands'
 };
 
 var bodyParser = require('body-parser');
@@ -82,11 +82,11 @@ function initDBConnection() {
 		// Variables section for an app in the Bluemix console dashboard).
 		// Alternately you could point to a local database here instead of a 
 		// Bluemix service.
-		//dbCredentials.host = "REPLACE ME";
-		//dbCredentials.port = REPLACE ME;
-		//dbCredentials.user = "REPLACE ME";
-		//dbCredentials.password = "REPLACE ME";
-		//dbCredentials.url = "REPLACE ME";
+		dbCredentials.host = "23d6cd70-6861-4dda-846a-616ea8760178-bluemix.cloudant.com";
+		dbCredentials.port = 443;
+		dbCredentials.user = "23d6cd70-6861-4dda-846a-616ea8760178-bluemix";
+		dbCredentials.password = "f69063425b816e128e00a4fc8337b7a7bc9aeb2b2786df1f59c2e2c591679d12";
+		dbCredentials.url = "https://23d6cd70-6861-4dda-846a-616ea8760178-bluemix:f69063425b816e128e00a4fc8337b7a7bc9aeb2b2786df1f59c2e2c591679d12@23d6cd70-6861-4dda-846a-616ea8760178-bluemix.cloudant.com";
 	}
 }
 
@@ -137,8 +137,7 @@ var saveDocument = function(id, name, value, response) {
 			response.sendStatus(200);
 		response.end();
 	});
-	
-}
+};
 
 app.get('/api/favorites/attach', function(request, response) {
     var doc = request.query.id;

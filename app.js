@@ -8,6 +8,7 @@ var express = require('express'),
   alexa = require('./routes/alexa'),
   http = require('http'),
   path = require('path'),
+  _ = require('lodash'),
   fs = require('fs');
 
 var app = express();
@@ -124,11 +125,38 @@ app.post('/alexa/request', function(req, res) {
     })
 });
 
-//app.get('/alexa/requests', function(req, res) {
-//  db.find({selector: {id:'*'}},function(err, result) {
-//    res.send(result);
-//  });
-//});
+app.get('/requests', function(req, res) {
+  db.get('_all_docs', {include_docs: true},function(err, result) {
+    var parsedResults = _.map(result.rows, function(element) {
+      return {
+        id: element.id,
+        location: element.doc.location,
+        intent: element.doc.intent,
+        timestamp: element.doc.timestamp
+      };
+    });
+    res.send(_.sortBy(parsedResults, 'timestamp'));
+  });
+});
+
+
+app.get('/requests/:id', function(req, res) {
+  db.get('_all_docs', {include_docs: true},function(err, result) {
+    var parsedResults = _.map(result.rows, function(element) {
+      return {
+        id: element.id,
+        location: element.doc.location,
+        intent: element.doc.intent,
+        timestamp: element.doc.timestamp
+      };
+    });
+    var firstIndex = _.findIndex(parsedResults, function(element) {
+      return element.id === req.params.id;
+    });
+
+    res.send(firstIndex >= 0 ? parsedResults[firstIndex] : {error: 'can\'t find it'});
+  });
+});
 
 /// example things
 function createResponseData(id, name, value, attachments) {

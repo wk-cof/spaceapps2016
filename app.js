@@ -87,36 +87,48 @@ function initDBConnection() {
     dbCredentials.user = "23d6cd70-6861-4dda-846a-616ea8760178-bluemix";
     dbCredentials.password = "f69063425b816e128e00a4fc8337b7a7bc9aeb2b2786df1f59c2e2c591679d12";
     dbCredentials.url = "https://23d6cd70-6861-4dda-846a-616ea8760178-bluemix:f69063425b816e128e00a4fc8337b7a7bc9aeb2b2786df1f59c2e2c591679d12@23d6cd70-6861-4dda-846a-616ea8760178-bluemix.cloudant.com";
+
+    cloudant = require('cloudant')(dbCredentials.url);
+    db = cloudant.use(dbCredentials.dbName);
   }
 }
 
 initDBConnection();
 
-app.get('/', routes.index);
-
-app.post('/alexa/request', alexa.request);
-
-function createCommand(intent, location) {
-  var dfd = new Promise(function(resolve, reject) {
-    var value = {
-      intent: intent,
-      location: location
-    };
+function createCommand(value) {
+  value.timestamp = Date.now();
+  var promise = new Promise(function(resolve, reject) {
     var id = '';
 
-    db.insert(value, id, function(err, doc) {
+    db.insert(value, id, function(err, data) {
       if (err) {
         console.log(err);
         reject(err);
       } else {
-        resolve(id);
+        resolve(data);
       }
     });
   });
-
+  return promise;
 }
 
-createCommand('foo', 'bar');
+app.get('/', routes.index);
+
+app.post('/alexa/request', function(req, res) {
+  createCommand(req.body)
+    .then(function(data) {
+      res.status(201).send(data);
+    })
+    .catch(function(err) {
+      res.status(400).send(err);
+    })
+});
+
+//app.get('/alexa/requests', function(req, res) {
+//  db.find({selector: {id:'*'}},function(err, result) {
+//    res.send(result);
+//  });
+//});
 
 /// example things
 function createResponseData(id, name, value, attachments) {

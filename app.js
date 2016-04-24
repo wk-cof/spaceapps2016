@@ -9,6 +9,8 @@ var express = require('express'),
   http = require('http'),
   path = require('path'),
   _ = require('lodash'),
+  parseString = require('xml2js').parseString,
+  request = require('request'),
   fs = require('fs');
 
 var app = express();
@@ -150,6 +152,27 @@ app.delete('/requests/:id', function(req, res) {
       }
     });
   });
+});
+
+app.post('/alexa/weather', function(req, res) {
+  var requestData = req.body;
+  request.get('http://api.wolframalpha.com/v2/query?input=temperature%20on%20' + req.body.location + '&appid=QPV5WU-E5E35PEX2U',
+    function(err, resp, data) {
+      var regex = /(\d+) K/gi;
+      //var regex = /(\d\d+) F/gi;
+      var matches = data.match(regex);
+      if (!matches) {
+        matches = data.match(/(\d+) .F/);
+      }
+      requestData.temperature = matches? matches[0] : 'not available';
+      createCommand(requestData)
+        .then(function(data) {
+          res.status(201).send(data);
+        })
+        .catch(function(err) {
+          res.status(400).send(err);
+        })
+    });
 });
 
 /// example things

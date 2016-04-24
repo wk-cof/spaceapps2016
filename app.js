@@ -126,37 +126,50 @@ app.post('/alexa/request', function(req, res) {
 });
 
 app.get('/requests', function(req, res) {
-  db.get('_all_docs', {include_docs: true},function(err, result) {
+  db.get('_all_docs', {include_docs: true}, function(err, result) {
     var parsedResults = _.map(result.rows, function(element) {
-      return {
-        id: element.id,
-        location: element.doc.location,
-        intent: element.doc.intent,
-        timestamp: element.doc.timestamp
-      };
+      return element.doc;
     });
     res.send(_.sortBy(parsedResults, 'timestamp'));
   });
 });
 
-
 app.get('/requests/:id', function(req, res) {
-  db.get('_all_docs', {include_docs: true},function(err, result) {
+  db.get('_all_docs', {include_docs: true}, function(err, result) {
     var parsedResults = _.map(result.rows, function(element) {
-      return {
-        id: element.id,
-        location: element.doc.location,
-        intent: element.doc.intent,
-        timestamp: element.doc.timestamp
-      };
+      return element.doc;
     });
     var firstIndex = _.findIndex(parsedResults, function(element) {
-      return element.id === req.params.id;
+      return element.id === req.params._id;
     });
 
     res.send(firstIndex >= 0 ? parsedResults[firstIndex] : {error: 'can\'t find it'});
   });
 });
+
+app.delete('/requests/:id', function(req, res) {
+  db.get('_all_docs', {include_docs: true}, function(err, result) {
+    var parsedResults = _.map(result.rows, function(element) {
+      return element.doc;
+    });
+    var firstIndex = _.findIndex(parsedResults, function(element) {
+      return element.id === req.params._id;
+    });
+
+    if (firstIndex >= 0) {
+      db.destroy(parsedResults[firstIndex]._id, parsedResults[firstIndex]._rev,
+        function(err, data) {
+          if (err) {
+            res.send(err)
+          } else {
+            res.send('deleted');
+          }
+        });
+    } else {
+      res.send('element doesn\'t exist');
+    }
+  });
+})
 
 /// example things
 function createResponseData(id, name, value, attachments) {

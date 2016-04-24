@@ -1,86 +1,61 @@
-<!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-
-  <!-- Basic Page Needs
-  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
-  <meta charset="utf-8">
-  <title> SuitePort | SpaceStation VR with Voice Control </title>
-  <meta name="description" content="Bentley New York City">
-
-
-  <!-- Mobile Specific Metas
-  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-
-  <!-- FONT
-  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
-    <link href="//fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">
-
-  <!-- CSS
-  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
-  <link rel="stylesheet" href="static/css/normalize.css">
-  <link rel="stylesheet" href="static/css/skeleton.css">
-  <link rel="stylesheet" href="static/css/styles.css">
-  <link rel="stylesheet" href="static/fonts/font-awesone/css/font-awesome.min.css">
-
-  <!-- Favicon
-  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
-  <link rel="icon" type="image/png" href="static/images/favicon.png">
-  <script src="http://a.vimeocdn.com/js/froogaloop2.min.js"></script>
-
+  <script src="https://aframe.io/releases/0.2.0/aframe.min.js"></script>
+  <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.12.0.min.js"></script>
 </head>
+
+
 <body>
+<a-scene canvas="" keyboard-shortcuts="" vr-mode-ui="">
+  <a-sky id="myAwesomeImage" src="./static/images/360-mars-2.jpg" rotation="0 -130 0" material="color:#FFF;shader:flat;src:url(images/360-mars-1.jpg)" geometry="primitive:sphere;radius:5000;segmentsWidth:64;segmentsHeight:64" scale="-1 1 1">
+  </a-sky>
 
-  <!-- Primary Page Layout
-  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
-<div id="page-2">
+  <a-entity light="color:#fff;type:ambient" data-aframe-default-light=""></a-entity>
 
-<nav class="nav">
-    <div class="container">
-      <div class="twelve columns branding">
-        <a class="logo" href="#" title="SuitePort logo"> <img class="logo" src="static/images/logo.png"></a>
+  <a-entity light="color:#fff;intensity:0.2" position="-1 2 1" data-aframe-default-light=""></a-entity>
 
-      </div>
-    </div>
-</nav>
+  <a-entity position="0 1.8 4" data-aframe-default-camera="">
 
-<div class="container">
-<div class="row eight columns offset-by-two main-content">
-  <div class="">
+    <a-entity camera="active:true" wasd-controls="" look-controls="" rotation="1.6042818263663057 10.54242343040716 0" position="0 0 0"></a-entity>
 
-      <p>Mars Space Port Experience</p>
+  </a-entity>
 
-      <h4> SPACE PORT </br> VIRTUAL REALITY </h4>
+  <canvas class="a-canvas" style="height: 619px; width: 645px;" width="1935" height="1857"></canvas>
 
-      <h5>SUITEPORT</h5>
+  <div class="a-enter-vr" data-a-enter-vr-no-headset="" data-a-enter-vr-no-webvr=""><button class="a-enter-vr-button"></button>
 
+    <div class="a-enter-vr-modal">
+      <p>Your browser does not support WebVR. To enter VR, use a VR-compatible browser or a mobile phone.</p><a href="http://mozvr.com/#start" target="_blank">Learn more.</a></div></div><div class="a-orientation-modal a-hidden"><button>Exit VR</button></div>
 
-  </div> <!-- End .twelve columns -->
+</a-scene>
 
-
-
-  <div class="eight columns offset-by-two">
-      <p> Join us for a Virtual Trip through space. </p>
-
-  </div> <!-- End .twelve columns -->
-</div><!-- End .container -->
-</div><!-- End .container -->
-  <button> Start </button>
-</div><!-- End #page -->
-
-<footer class="footer row" >
-    <div class="container">
-      <div class="ten columns">
-      <p> <a href="http://linxlab.com">SuitePort</a> | Suite Port </p>
-    </div>
-    <div class="two columns">
-      <p>  &copy; Linxlab 2016   </p>
-    </div>
-</footer>
-
-
-<!-- End Document -->
-
+<script type="text/javascript">
+  window.myLocation  = "home";
+  setInterval(function() {
+    $.get('http://SuitePort.mybluemix.net/requests')
+        .done(function(data) {
+          console.log(data[data.length-1].location);
+          if (data.length && data[data.length-1].location != window.myLocation) {
+            console.log(data);
+            console.log(data[0].location);
+            switch(data[data.length-1].location) {
+              case 'mars':
+                $("#myAwesomeImage").attr('src', './static/images/360-mars-2.jpg');
+                break;
+              case 'home':
+              case 'the hub':
+                $("#myAwesomeImage").attr('src', './static/images/download.png');
+                break;
+              case 'the moon':
+                $("#myAwesomeImage").attr('src', './static/images/moon.jpg');
+                break;
+              default:
+                break;
+            }
+            window.myLocation = data[data.length-1].location;
+          }
+        });
+  }, 1000);
+</script>
 </body>
 </html>

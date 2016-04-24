@@ -162,7 +162,7 @@ app.post('/alexa/weather', function(req, res) {
       //var regex = /(\d\d+) F/gi;
       var matches = data.match(regex);
       if (!matches) {
-        matches = data.match(/(\d+) .F/);
+        matches = data.match(/(\d+) .F/gi);
       }
       requestData.temperature = matches? matches[0] : 'not available';
       createCommand(requestData)
